@@ -13,4 +13,7 @@ For more details on how to customize your config see `example_config.yaml`.
 
 ## Upload
 
-TODO
+Upload the downloaded runs to another project with:
+`python upload_run.py --entity ENTITY --project PROJECT --stage_id STAGE_ID`.
+If you encounter `wandb: ERROR Error while calling W&B API: run ... was previously created and deleted; try a new run name (<Response [409]>)`
+set the flag `--new_stage_id`.

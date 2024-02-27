@@ -11,10 +11,11 @@ def parse_args():
     parser.add_argument("--entity", type=str, required=True)
     parser.add_argument("--project", type=str, required=True)
     parser.add_argument("--stage_id", type=str, required=True)
+    parser.add_argument("--new_stage_id", action="store_true")
     return vars(parser.parse_args())
 
 
-def main(host, entity, project, stage_id):
+def main(host, entity, project, stage_id, new_stage_id):
     # setup
     print(f"connecting to {host}")
     wandb.login(host=host)
@@ -39,7 +40,7 @@ def main(host, entity, project, stage_id):
     wandb.init(
         entity=entity,
         project=project,
-        id=stage_id,
+        id=None if new_stage_id else stage_id,
         name=name,
         save_code=False,
     )
@@ -49,7 +50,6 @@ def main(host, entity, project, stage_id):
     for line in lines:
         print(line)
     wandb.finish()
-
     print("fin")
 
 
