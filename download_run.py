@@ -34,6 +34,8 @@ def main(host, entity, project, stage_id, config):
     if config is not None and "config" in config:
         for key in config["config"].get("delete", []):
             run_config.pop(key)
+    # add name to config
+    run_config["name"] = run.name
     with open(out / "config.yaml", "w") as f:
         yaml.safe_dump(run_config, f)
 

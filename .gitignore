@@ -5,6 +5,7 @@
 *.yaml
 log*.txt
 log*.log
+wandb
 
 .idea
 
