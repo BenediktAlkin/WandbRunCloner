@@ -66,6 +66,14 @@ def main(host, entity, project, stage_id, config):
     else:
         print(f"no stdout log found")
 
+    # download metrics
+    rows = []
+    for row in run.scan_history():
+        row = [item for item in row if item[0] != "_"]
+        rows.append(row)
+    with open(out / f"history.yaml", "w") as f:
+        yaml.safe_dump(rows, f)
+
     print("fin")
 
 
