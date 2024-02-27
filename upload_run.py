@@ -3,6 +3,7 @@ from pathlib import Path
 
 import wandb
 import yaml
+from tqdm import tqdm
 
 
 def parse_args():
@@ -31,10 +32,14 @@ def main(host, entity, project, stage_id, new_stage_id):
     with open(out / f"summary.yaml") as f:
         summary = yaml.safe_load(f)
 
-    # download log
+    # load log
     with open(out / f"output.log") as f:
         log = f.read()
     lines = log.split("\n")
+
+    # load history
+    with open(out / f"history.yaml") as f:
+        history = yaml.safe_load(f)
 
     # create run
     wandb.init(
@@ -49,6 +54,9 @@ def main(host, entity, project, stage_id, new_stage_id):
     # print logs
     for line in lines:
         print(line)
+    # log history
+    for row in tqdm(history):
+        wandb.log(row)
     wandb.finish()
     print("fin")
 

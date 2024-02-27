@@ -1,7 +1,12 @@
 from argparse import ArgumentParser
-import wandb
-import yaml
+from collections import defaultdict
 from pathlib import Path
+
+import yaml
+from tqdm import tqdm
+
+import wandb
+
 
 def parse_args():
     parser = ArgumentParser()
@@ -30,6 +35,7 @@ def main(host, entity, project, stage_id, config):
     out.mkdir(parents=True)
 
     # download run config
+    print(f"download config")
     run_config = run.config
     if config is not None and "config" in config:
         for key in config["config"].get("delete", []):
@@ -40,6 +46,7 @@ def main(host, entity, project, stage_id, config):
         yaml.safe_dump(run_config, f)
 
     # download summary
+    print(f"download summary")
     summary = dict(run.summary)
     # remove weird objects
     summary.pop("_wandb")
@@ -47,6 +54,7 @@ def main(host, entity, project, stage_id, config):
         yaml.safe_dump(summary, f)
 
     # download log
+    print(f"download stdout")
     file = run.file("output.log")
     if file.sizeBytes > 0:
         file.download(out.as_posix(), replace=True)
@@ -67,16 +75,18 @@ def main(host, entity, project, stage_id, config):
         print(f"no stdout log found")
 
     # download metrics
-    rows = []
-    for row in run.scan_history():
-        row = [item for item in row if item[0] != "_"]
-        rows.append(row)
+    print(f"download metrics")
+    rows = defaultdict(dict)
+    for key in tqdm(summary.keys()):
+        for item in run.scan_history(keys=[key, "_step"]):
+            step = item["_step"]
+            value = item[key]
+            rows[step][key] = value
+    rows = [rows[i] for i in range(len(rows))]
     with open(out / f"history.yaml", "w") as f:
         yaml.safe_dump(rows, f)
 
     print("fin")
-
-
 
 
 if __name__ == "__main__":
