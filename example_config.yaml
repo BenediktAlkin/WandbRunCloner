@@ -1,0 +1,13 @@
+config:
+  delete:
+    # these keys will be deleted from run.config
+    - dist/account_name
+
+log:
+  replace:
+    # all occourances of "pattern" in the stdout log will be replaced by "replacement"
+    - pattern: /somepath/home
+      replacement: /home
+  delete:
+    # lines from the stdout log that contain these patterns will be deleted
+    - hostname
